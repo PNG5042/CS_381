@@ -1,27 +1,34 @@
 import unittest
-import json
-from review_service import app
+import requests
 
-class ReviewServiceTest(unittest.TestCase):
+class TestSubmissionService(unittest.TestCase):
+    BASE_URL = 'http://localhost:5000'  # I'll adjust this if my backend runs on a different port or URL
 
-    def setUp(self):
-        self.app = app.test_client()
-        self.app.testing = True
-
-    def test_add_review(self):
-        response = self.app.post('/review', 
-            data=json.dumps({"restaurant": "Test Restaurant", "review": "Great food!", "rating": 5}),
-            content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        self.assertIn(b'Review submitted', response.data)
-
-    def test_get_reviews(self):
-        self.app.post('/review', 
-            data=json.dumps({"restaurant": "Test Restaurant", "review": "Great food!", "rating": 5}),
-            content_type='application/json')
-        response = self.app.get('/reviews')
+    def test_submit_submission(self):
+        payload = {
+            "title": "Software Engineer",
+            "specialty": "Backend Development",
+            "city": "San Francisco",
+            "state": "CA",
+            "salary": 120000,
+            "years_of_experience": 5
+        }
+        response = requests.post(f'{self.BASE_URL}/submission', json=payload)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Test Restaurant', response.data)
+        self.assertEqual(response.json().get('status'), 'Submission successful')
+
+    def test_get_submissions(self):
+        response = requests.get(f'{self.BASE_URL}/submissions')
+        self.assertEqual(response.status_code, 200)
+        submissions = response.json()
+        self.assertIsInstance(submissions, list)
+        if submissions:
+            self.assertIn('title', submissions[0])
+            self.assertIn('specialty', submissions[0])
+            self.assertIn('city', submissions[0])
+            self.assertIn('state', submissions[0])
+            self.assertIn('salary', submissions[0])
+            self.assertIn('years_of_experience', submissions[0])
 
 if __name__ == '__main__':
     unittest.main()
