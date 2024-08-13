@@ -2,55 +2,69 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
-  const [reviews, setReviews] = useState([]);
-  const [newReview, setNewReview] = useState({ restaurant: '', review: '', rating: '' });
+  const [submissions, setSubmissions] = useState([]);
+  const [newSubmission, setNewSubmission] = useState({
+    title: '',
+    specialty: '',
+    city: '',
+    state: '',
+    salary: '',
+    yearsOfExperience: ''
+  });
 
   useEffect(() => {
-    fetchReviews();
+    fetchSubmissions();
   }, []);
 
-  const fetchReviews = async () => {
+  const fetchSubmissions = async () => {
     try {
-      const response = await axios.get('/reviews');
-      setReviews(response.data);
+      const response = await axios.get('/submissions');
+      setSubmissions(response.data);
     } catch (error) {
-      console.error('Error fetching reviews:', error);
+      console.error('Error fetching submissions:', error);
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.post('/review', newReview);
-      fetchReviews();
+      await axios.post('/submission', newSubmission);
+      fetchSubmissions();
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error('Error submitting data:', error);
     }
   };
 
   const handleChange = (event) => {
-    setNewReview({ ...newReview, [event.target.name]: event.target.value });
+    setNewSubmission({ ...newSubmission, [event.target.name]: event.target.value });
   };
 
   return (
     <div>
-      <h1>Restaurant Reviews</h1>
+      <h1>Submission Form</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="restaurant" placeholder="Restaurant Name" onChange={handleChange} required />
-        <textarea name="review" placeholder="Review" onChange={handleChange} required></textarea>
-        <input type="number" name="rating" placeholder="Rating" onChange={handleChange} required />
-        <button type="submit">Submit Review</button>
+        <input type="text" name="title" placeholder="Title" onChange={handleChange} required />
+        <input type="text" name="specialty" placeholder="Specialty" onChange={handleChange} required />
+        <input type="text" name="city" placeholder="City" onChange={handleChange} required />
+        <input type="text" name="state" placeholder="State" onChange={handleChange} required />
+        <input type="number" name="salary" placeholder="Salary" onChange={handleChange} required />
+        <input type="number" name="yearsOfExperience" placeholder="Years of Experience" onChange={handleChange} required />
+        <button type="submit">Submit</button>
       </form>
-      <h2>All Reviews</h2>
+      <h2>All Submissions</h2>
       <ul>
-        {reviews.map((review, index) => (
+        {submissions.map((submission, index) => (
           <li key={index}>
-            <strong>{review.restaurant}</strong>: {review.review} (Rating: {review.rating})
+            <strong>{submission.title}</strong>, {submission.specialty}, {submission.city}, {submission.state} - Salary: {submission.salary}, Experience: {submission.yearsOfExperience} years
           </li>
         ))}
       </ul>
     </div>
   );
+}
+
+export default App;
+
 }
 
 export default App;
