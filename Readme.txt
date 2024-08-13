@@ -6,7 +6,6 @@ Update the Test File
 First, I need to update the test_submission_service.py file. I’ll replace its content with the following code:
 
 python
-Copy code
 import unittest
 import requests
 
