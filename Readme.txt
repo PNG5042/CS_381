@@ -1,30 +1,66 @@
-Restaurant Review Microservice
-This project is a simple microservice that provides restaurant reviews in JSON format. The microservice is built with a Python backend and a React frontend. It enables users to send and receive restaurant reviews.
+Testing the Submission Microservice
 
-How to Use Backend
-You can just navigate to the backend directory.
-Create and populate requirements.txt with necessary dependencies.
-Install the required Python packages using pip install -r requirements.txt.
-Implement the review_service.py script.
+I’ve set up a microservice to store submission data, and I need to test it to make sure everything’s working correctly. Here’s how I can do that:
 
-How to Use Frontend
-Navigate to the review-client directory.
-Install the required Node.js packages using npm install.
-Starting Backend Service
+Update the Test File
+First, I need to update the test_submission_service.py file. I’ll replace its content with the following code:
 
+python
+Copy code
+import unittest
+import requests
+
+class TestSubmissionService(unittest.TestCase):
+    BASE_URL = 'http://localhost:5000'  # I'll adjust this if my backend runs on a different port or URL
+
+    def test_submit_submission(self):
+        payload = {
+            "title": "Software Engineer",
+            "specialty": "Backend Development",
+            "city": "San Francisco",
+            "state": "CA",
+            "salary": 120000,
+            "years_of_experience": 5
+        }
+        response = requests.post(f'{self.BASE_URL}/submission', json=payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json().get('status'), 'Submission successful')
+
+    def test_get_submissions(self):
+        response = requests.get(f'{self.BASE_URL}/submissions')
+        self.assertEqual(response.status_code, 200)
+        submissions = response.json()
+        self.assertIsInstance(submissions, list)
+        if submissions:
+            self.assertIn('title', submissions[0])
+            self.assertIn('specialty', submissions[0])
+            self.assertIn('city', submissions[0])
+            self.assertIn('state', submissions[0])
+            self.assertIn('salary', submissions[0])
+            self.assertIn('years_of_experience', submissions[0])
+
+if __name__ == '__main__':
+    unittest.main()
+Running the Tests
+Ensure the Backend is Running: Before running the tests, I need to make sure the microservice is up and running. If it’s not, I’ll start it with:
+
+bash
+Copy code
 python review_service.py
-Starting Frontend Service
+Run the Test Script: Next, I’ll run the test script with:
 
-npm start
-API Reference
-POST /review
-Submits a restaurant review.
+bash
+Copy code
+python test_submission_service.py
+Checking the Results
+For test_submit_submission:
 
-Request Body:
-{
-  "restaurant": "Restaurant Name",
-  "review": "Your review message",
-  "rating": 5
+I’ll send a POST request to /submission with some test data.
+I’ll check if the response status code is 200 and if the response message says 'Submission successful'.
+For test_get_submissions:
+
+I’ll send a GET request to /submissions.
+I’ll make sure the response status code is 200 and that the response is a list that includes the expected fields.
 }
 Response:
 {
